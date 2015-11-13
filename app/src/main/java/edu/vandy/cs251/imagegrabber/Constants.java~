@@ -1,0 +1,11 @@
+package edu.vandy.cs251.imagegrabber;
+
+/**
+ * This class contains all the constants used in the program
+ *@author Upendra Dhakal, CS251, Vanderbilt University
+ */
+public class Constants {
+    // Used in MainActivity to pass the iamge url and form the
+    public static final String IMAGE_PUT_EXTRA_TAG = "IMAGE";
+    public static final int DOWNLOAD_IMAGE_REQUEST = 1;
+}

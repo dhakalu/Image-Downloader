@@ -1,0 +1,92 @@
+package edu.vandy.cs251.imagegrabber;
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+
+/**
+ * This is the simple class that downloads the image and send the image object back
+ * to the activity that launched this activity
+ */
+public class DownloadActivity extends AppCompatActivity {
+
+    /**
+     * Debug Tag for logging the messages to the LogCat
+     */
+    private final String TAG = DownloadActivity.class.getSimpleName();
+
+    /**
+     * This is the tag used to obtain the url passed form the Main Activity
+     */
+    public static final String IMAGE_URL_EXTRA_TAG = "IMAGE_URL";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_download);
+        Intent intent = getIntent();
+        new DownloadImageTask().execute(intent.getStringExtra(IMAGE_URL_EXTRA_TAG));
+    }
+
+    /**
+     * This class is responsible to launch a new thread that runs in the background that
+     * is responsible to download the image
+     */
+    class DownloadImageTask extends AsyncTask<String, Void, Uri> {
+        /**
+         * ProgressDialog shown when the download runs in background
+         */
+        private ProgressDialog mProgressDialog;
+
+        /**
+         *Time taken for the image to download
+         */
+        private long downloadTime;
+
+        /**
+         * This is the method that is executed befor the actual download starts
+         */
+        @Override
+        protected void onPreExecute() {
+            mProgressDialog = new ProgressDialog(DownloadActivity.this);
+            mProgressDialog.setMessage("Downloading your image...");
+            mProgressDialog.show();
+        }
+
+        /**
+         * Themethod that is responsible for the download of image in background
+         * @param params The Url that is to be passed to download the image
+         * @return The Uri of the downloaded image
+         */
+        @Override
+        protected Uri doInBackground(String... params) {
+            Uri downloadUri = Uri.parse(params[0]).buildUpon().build();
+            long before = System.currentTimeMillis();
+            Uri imageUri = DownloadUtils.downloadImage(DownloadActivity.this, downloadUri);
+            long after = System.currentTimeMillis();
+            downloadTime = after - before;
+            return imageUri;
+        }
+
+        /**
+         * The method that is executed after the image download is complete
+         * @param uri The uri returned after the image was downloaded
+         */
+        @Override
+        protected void onPostExecute(Uri uri) {
+            mProgressDialog.dismiss();
+            Intent intent = new Intent();
+            Image downloadedImage = null;
+            if (uri != null){
+                downloadedImage = new Image(uri.toString(), downloadTime);
+            }
+            intent.putExtra(Constants.IMAGE_PUT_EXTRA_TAG, downloadedImage);
+            setResult(Constants.DOWNLOAD_IMAGE_REQUEST, intent);
+            finish();
+        }
+    }
+}

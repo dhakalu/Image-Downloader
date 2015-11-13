@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Image Grabber</string>
+    <string name="hint_image_url">Please paste the url here</string>
+    <string name="btn_text_view_image">View</string>
+    <string name="btn_text_download_image">Download</string>
+    <string name="title_activity_settings">Settings</string>
+</resources>
